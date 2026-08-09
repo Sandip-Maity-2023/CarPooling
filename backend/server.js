@@ -35,7 +35,7 @@ const io = new Server(server, {
 });
 
 /*
-   MIDDLEWARE
+   MIDDLE
 ========================================= */
 
 app.use(
