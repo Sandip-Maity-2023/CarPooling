@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// IMPORTANT: We must import the authController you created!
+const authController = require('../controllers/authController');
+
 const router = express.Router();
 
 // ==========================================
@@ -51,6 +54,9 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// NEW: Driver Login (Calls your controller function)
+router.post('/driver-login', authController.driverLogin);
 
 // ==========================================
 // ADMIN DASHBOARD - EMPLOYEES
@@ -213,7 +219,7 @@ router.post('/wallet/add', async (req, res) => {
   }
 });
 
-// Deduct Funds from Wallet (NEWLY ADDED)
+// Deduct Funds from Wallet 
 router.post('/wallet/deduct', async (req, res) => {
   try {
     const { userId, amount } = req.body;

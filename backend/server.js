@@ -63,7 +63,7 @@ app.get("/", (req, res) => {
    API ROUTES
 ========================================= */
 
-// Authentication
+// Authentication (This already includes your driver-login if you updated authRoutes.js!)
 app.use("/api/auth", require("./routes/authRoutes"));
 
 // Vehicles
@@ -74,6 +74,9 @@ app.use("/api/rides", require("./routes/rideRoutes"));
 
 // Geocoding / Location Search
 app.use("/api/geocode", require("./routes/geocodeRoutes"));
+
+// NEW: Bookings 
+//app.use("/api/bookings", require("./routes/BookingRoutes"));
 
 // Reports & Fleet Analytics Route (Dynamic Database Calculations)
 app.get("/api/reports", async (req, res) => {
@@ -205,13 +208,6 @@ app.get("/api/reports", async (req, res) => {
 io.on("connection", (socket) => {
   console.log("🟢 Socket connected:", socket.id);
 
-  /*
-   * Driver / passenger joins a trip
-   *
-   * Frontend:
-   * socket.emit("join_trip", tripId);
-   */
-
   socket.on("join_trip", (tripId) => {
     if (!tripId) {
       console.log("⚠️ No tripId provided");
@@ -222,16 +218,6 @@ io.on("connection", (socket) => {
 
     console.log(`🚗 Socket ${socket.id} joined trip: ${tripId}`);
   });
-
-  /*
-   * Driver sends current location
-   *
-   * Frontend:
-   * socket.emit("update_location", {
-   *   tripId,
-   *   location
-   * });
-   */
 
   socket.on("update_location", ({ tripId, location }) => {
     if (!tripId || !location) {
@@ -245,10 +231,6 @@ io.on("connection", (socket) => {
     io.to(tripId).emit("location_updated", location);
   });
 
-  /*
-   * Leave a trip
-   */
-
   socket.on("leave_trip", (tripId) => {
     if (!tripId) return;
 
@@ -256,10 +238,6 @@ io.on("connection", (socket) => {
 
     console.log(`🚪 Socket ${socket.id} left trip: ${tripId}`);
   });
-
-  /*
-   * Socket disconnected
-   */
 
   socket.on("disconnect", (reason) => {
     console.log(`🔴 Socket disconnected: ${socket.id} | Reason: ${reason}`);
